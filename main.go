@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"learn2/auth"
+	"learn2/middleware"
 	"log"
 	"net/http"
 
@@ -183,10 +185,12 @@ func setupRouter() *gin.Engine {
 	r := gin.Default()
 	Migrate(db)
 
+	r.POST("/login", auth.LoginHandler)
+
 	r.POST("/students", func(ctx *gin.Context) {
 		postHandler(ctx, db)
 	})
-	r.GET("/students", func(ctx *gin.Context) {
+	r.GET("/students", middleware.AuthValid, func(ctx *gin.Context) {
 		getAllHandler(ctx, db)
 	})
 	r.GET("/students/:id", func(ctx *gin.Context) {
