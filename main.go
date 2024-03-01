@@ -6,8 +6,10 @@ import (
 	"learn2/middleware"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/lib/pq" //driver postgress
+	"github.com/lpernett/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -176,8 +178,11 @@ func deleteHandler(c *gin.Context, db *gorm.DB) {
 }
 
 func setupRouter() *gin.Engine {
-
-	conn := "user=postgres password='semogaberkah' dbname=postgres sslmode=disable"
+	errEnv := godotenv.Load()
+	if errEnv != nil {
+		log.Fatal("Error loading .env file")
+	}
+	conn := os.Getenv("POSTGRES_URL")
 	db, err := gorm.Open(postgres.Open(conn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
